@@ -3,8 +3,11 @@ const express = require('express');
 const connectToMongoDB = require('./dbConnect/dbConnection.js');
 const app = express();
 const routes = require("./routes/routes.js");
+const cors = require("cors"); // Import cors
+
 
 // Middleware
+app.use(cors()); // Use cors middleware
 app.use(express.json());
 app.use("/", routes);
 
