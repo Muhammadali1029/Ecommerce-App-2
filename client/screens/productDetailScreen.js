@@ -30,7 +30,7 @@ const ProductDetailScreen = ({ route, navigation }) => {
         setMessage('Please enter a valid quantity');
         return;
       }
-
+  
       // Retrieve existing cart items from AsyncStorage
       const existingCartItems = await AsyncStorage.getItem('cartItems');
       let cartItems = existingCartItems ? JSON.parse(existingCartItems) : [];
@@ -43,7 +43,12 @@ const ProductDetailScreen = ({ route, navigation }) => {
         cartItems[existingItemIndex].quantity += quantity;
       } else {
         // If the product doesn't exist, add it as a new item
-        cartItems.push({ id: productId, name: product.name, quantity: quantity });
+        cartItems.push({ 
+          id: productId, 
+          name: product.name, 
+          price: product.price,  // Add price to the cart item
+          quantity: quantity 
+        });
       }
   
       // Store updated cart items in AsyncStorage
@@ -55,6 +60,7 @@ const ProductDetailScreen = ({ route, navigation }) => {
       setMessage('Failed to add product to cart');
     }
   };
+  
   
 
   if (!product) {

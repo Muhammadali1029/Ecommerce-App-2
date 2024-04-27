@@ -33,9 +33,11 @@ const CartScreen = () => {
   };
 
   const handlePlaceOrder = () => {
-    navigation.navigate('OrderPlacement'); // Navigate to the order placement screen
+    navigation.navigate('OrderPlacement', { cartItems }); // Pass cartItems to OrderPlacement screen
   };
 
+  console.log('Cart Items:', cartItems);
+  
   return (
     <View style={styles.container}>
       <Text style={styles.title}>Cart</Text>
@@ -50,7 +52,9 @@ const CartScreen = () => {
           )}
           <View style={styles.itemInfo}>
             <Text>{item.name}</Text>
+            <Text>Price: £{item.price}</Text> {/* Display item price */}
             <Text>Quantity: {item.quantity}</Text>
+            <Text>Total: £{item.price * item.quantity}</Text> {/* Calculate and display total price */}
           </View>
           <TouchableOpacity onPress={() => removeFromCart(item.id)} style={styles.deleteButton}>
             <Text style={styles.deleteButtonText}>Delete</Text>
