@@ -4,7 +4,7 @@ import DateTimePicker from '@react-native-community/datetimepicker';
 import Moment from 'moment';
 import axios from 'axios'; // Import Axios for making HTTP requests
 
-const OrderScreen = ({ route }) => {
+const OrderScreen = ({ route, navigation }) => {
   const { cartItems } = route.params; // Extracting cartItems from navigation route
 
   const [name, setName] = useState('');
@@ -19,6 +19,8 @@ const OrderScreen = ({ route }) => {
     pickupDate: '',
   });
   const [isDatePickerVisible, setDatePickerVisibility] = useState(false);
+  const [orderSuccess, setOrderSuccess] = useState(false);
+  const [orderId, setOrderId] = useState('');
 
   useEffect(() => {
     setItems(cartItems); // Update items when cartItems change
@@ -71,17 +73,6 @@ const handlePlaceOrder = async () => {
       return;
     }
   
-    // Log the payload before sending the request
-    console.log('Sending order request with payload:', {
-      name: name,
-      phoneNumber,
-      email,
-      company,
-      pickupDateTime: pickupDate,
-      items,
-      totalPrice: calculateTotalPrice(),
-    });
-  
     try {
       // Make an HTTP POST request to the server to create the order
       console.log('Form is valid. Sending order request...');
@@ -97,6 +88,9 @@ const handlePlaceOrder = async () => {
       
       // Handle success response
       console.log('Order placed:', response.data.newOrder);
+      setOrderSuccess(true);
+      setOrderId(response.data.newOrder._id);
+      console.log("order ID: ", response.data.newOrder._id);
       // Optionally, you can show an alert or navigate to a success screen
       Alert.alert('Success', 'Order placed successfully');
     } catch (error) {
@@ -105,6 +99,7 @@ const handlePlaceOrder = async () => {
       Alert.alert('Error', 'Failed to place order. Please try again later.');
     }
   };
+  
   
 
   const showDatePicker = () => {
@@ -122,78 +117,113 @@ const handlePlaceOrder = async () => {
     hideDatePicker();
   };
 
+  const handleGoBackToHome = () => {
+    navigation.navigate('Home');
+  };
+
   return (
     <View style={styles.container}>
-      <Text style={styles.title}>Place Order</Text>
-      <View style={styles.inputContainer}>
-        <Text style={styles.label}>Name *</Text>
-        <TextInput
-          style={styles.input}
-          placeholder="Enter your name"
-          value={name}
-          onChangeText={setName}
-        />
-        {errors.name !== '' && <Text style={styles.error}>{errors.name}</Text>}
-      </View>
-      <View style={styles.inputContainer}>
-        <Text style={styles.label}>Phone Number *</Text>
-        <TextInput
-          style={styles.input}
-          placeholder="Enter your phone number"
-          value={phoneNumber}
-          onChangeText={setPhoneNumber}
-        />
-        {errors.phoneNumber !== '' && <Text style={styles.error}>{errors.phoneNumber}</Text>}
-      </View>
-      <View style={styles.inputContainer}>
-        <Text style={styles.label}>Email</Text>
-        <TextInput
-          style={styles.input}
-          placeholder="Enter your email"
-          value={email}
-          onChangeText={setEmail}
-        />
-      </View>
-      <View style={styles.inputContainer}>
-        <Text style={styles.label}>Company</Text>
-        <TextInput
-          style={styles.input}
-          placeholder="Enter your company name"
-          value={company}
-          onChangeText={setCompany}
-        />
-      </View>
-      <View style={styles.inputContainer}>
-        <Text style={styles.label}>Pickup Date *</Text>
-        <TouchableOpacity onPress={showDatePicker}>
-          <Text style={styles.input}>{pickupDate}</Text>
-        </TouchableOpacity>
-        {((Platform.OS === 'ios' || Platform.OS === 'android') && isDatePickerVisible) && (
-          <DateTimePicker
-            value={new Date()}
-            mode="datetime"
-            is24Hour={true}
-            display="default"
-            onChange={handleConfirm}
-          />
-        )}
-        {Platform.OS === 'web' && isDatePickerVisible && (
-          <input
-            type="datetime-local"
-            value={pickupDate}
-            onChange={(e) => setPickupDate(e.target.value)}
-          />
-        )}
-        {errors.pickupDate !== '' && <Text style={styles.error}>{errors.pickupDate}</Text>}
-      </View>
-      <TouchableOpacity
-        onPress={handlePlaceOrder}
-        style={styles.placeOrderButton}
-      >
-        <Text style={styles.placeOrderButtonText}>Place Order</Text>
-      </TouchableOpacity>
+      {!orderSuccess && (
+        <>
+        <Text style={styles.title}>Place Order</Text>
+          {/* Form fields */}
+          <View style={styles.inputContainer}>
+            <Text style={styles.label}>Name *</Text>
+            <TextInput
+              style={styles.input}
+              placeholder="Enter your name"
+              value={name}
+              onChangeText={setName}
+            />
+            {errors.name !== '' && <Text style={styles.error}>{errors.name}</Text>}
+          </View>
+          <View style={styles.inputContainer}>
+            <Text style={styles.label}>Phone Number *</Text>
+            <TextInput
+              style={styles.input}
+              placeholder="Enter your phone number"
+              value={phoneNumber}
+              onChangeText={setPhoneNumber}
+            />
+            {errors.phoneNumber !== '' && <Text style={styles.error}>{errors.phoneNumber}</Text>}
+          </View>
+          <View style={styles.inputContainer}>
+            <Text style={styles.label}>Email</Text>
+            <TextInput
+              style={styles.input}
+              placeholder="Enter your email"
+              value={email}
+              onChangeText={setEmail}
+            />
+          </View>
+          <View style={styles.inputContainer}>
+            <Text style={styles.label}>Company</Text>
+            <TextInput
+              style={styles.input}
+              placeholder="Enter your company name"
+              value={company}
+              onChangeText={setCompany}
+            />
+          </View>
+          <View style={styles.inputContainer}>
+            <Text style={styles.label}>Pickup Date *</Text>
+            <TouchableOpacity onPress={showDatePicker}>
+              <Text style={styles.input}>{pickupDate}</Text>
+            </TouchableOpacity>
+            {((Platform.OS === 'ios' || Platform.OS === 'android') && isDatePickerVisible) && (
+              <DateTimePicker
+                value={new Date()}
+                mode="datetime"
+                is24Hour={true}
+                display="default"
+                onChange={handleConfirm}
+              />
+            )}
+            {Platform.OS === 'web' && isDatePickerVisible && (
+              <input
+                type="datetime-local"
+                value={pickupDate}
+                onChange={(e) => setPickupDate(e.target.value)}
+              />
+            )}
+            {errors.pickupDate !== '' && <Text style={styles.error}>{errors.pickupDate}</Text>}
+          </View>
+          
+          {/* Display Total Price */}
+          <View style={styles.inputContainer}>
+            <Text style={styles.label}>Total Price</Text>
+            <Text style={styles.input}>{calculateTotalPrice()}</Text>
+          </View>
+          
+          {/* Place Order Button */}
+          <TouchableOpacity
+            onPress={handlePlaceOrder}
+            style={styles.placeOrderButton}
+          >
+            <Text style={styles.placeOrderButtonText}>Place Order</Text>
+          </TouchableOpacity>
+          <TouchableOpacity
+            onPress={handleGoBackToHome}
+            style={styles.goBackButton}
+          >
+            <Text style={styles.goBackButtonText}>Go Back to Home</Text>
+          </TouchableOpacity>
+        </>
+      )}
+      {orderSuccess && (
+        <View style={styles.successContainer}>
+          <Text style={styles.successMessage}>Order successfully placed!</Text>
+          <Text style={styles.orderId}>Order Number: {orderId}</Text>
+          <TouchableOpacity
+            onPress={handleGoBackToHome}
+            style={styles.goBackButton}
+          >
+            <Text style={styles.goBackButtonText}>Go Back to Home</Text>
+          </TouchableOpacity>
+        </View>
+      )}
     </View>
-  );
+  );  
 };
 
 const styles = StyleSheet.create({
@@ -231,6 +261,35 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   placeOrderButtonText: {
+    color: '#fff',
+    fontWeight: 'bold',
+  },
+  successContainer: {
+    marginTop: 20,
+    backgroundColor: '#d4edda',
+    borderColor: '#c3e6cb',
+    borderWidth: 1,
+    borderRadius: 5,
+    padding: 10,
+  },
+  successMessage: {
+    fontSize: 18,
+    fontWeight: 'bold',
+    color: '#155724',
+  },
+  orderId: {
+    fontSize: 16,
+    marginTop: 5,
+  },
+  goBackButton: {
+    backgroundColor: '#007bff',
+    paddingVertical: 10,
+    paddingHorizontal: 15,
+    borderRadius: 5,
+    alignItems: 'center',
+    marginTop: 10,
+  },
+  goBackButtonText: {
     color: '#fff',
     fontWeight: 'bold',
   },

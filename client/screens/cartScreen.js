@@ -6,6 +6,8 @@ import { useNavigation } from '@react-navigation/native';
 const CartScreen = () => {
   const [cartItems, setCartItems] = useState([]);
   const navigation = useNavigation();
+  const [totalPrice, setTotalPrice] = useState(0); // State to hold total price
+  const [showMessage, setShowMessage] = useState(false); // State to control conditional rendering
 
   useEffect(() => {
     const fetchCartItems = async () => {
@@ -22,6 +24,18 @@ const CartScreen = () => {
     fetchCartItems();
   }, []);
 
+  useEffect(() => {
+    // Calculate total price whenever cart items change
+    let totalPrice = 0;
+    cartItems.forEach(item => {
+      totalPrice += item.price * item.quantity;
+    });
+    setTotalPrice(totalPrice);
+
+    // Show message if there are no items in the cart
+    setShowMessage(cartItems.length === 0);
+  }, [cartItems]);
+
   const removeFromCart = async (id) => {
     try {
       const updatedCartItems = cartItems.filter(item => item.id !== id);
@@ -32,38 +46,51 @@ const CartScreen = () => {
     }
   };
 
-  const handlePlaceOrder = () => {
-    navigation.navigate('OrderPlacement', { cartItems }); // Pass cartItems to OrderPlacement screen
-  };
+  const handlePlaceOrder = async () => {
+    try {
+      await AsyncStorage.removeItem('cartItems'); // Remove cart items from AsyncStorage
+      navigation.navigate('OrderPlacement', { cartItems }); // Pass cartItems to OrderPlacement screen
+    } catch (error) {
+      console.error(error);
+    }
+  };  
 
   console.log('Cart Items:', cartItems);
   
   return (
     <View style={styles.container}>
       <Text style={styles.title}>Cart</Text>
-      {cartItems.map((item, index) => (
-        <View key={index} style={styles.itemContainer}>
-          {item.image ? (
-            <Image source={{ uri: item.image }} style={styles.itemImage} />
-          ) : (
-            <View style={[styles.itemImage, styles.imagePlaceholder]}>
-              <Text style={styles.imagePlaceholderText}>Image Not Available</Text>
+      {showMessage ? (
+        <Text style={styles.emptyCartMessage}>No items in cart</Text>
+      ) : (
+        <>
+          {cartItems.map((item, index) => (
+            <View key={index} style={styles.itemContainer}>
+              {item.image ? (
+                <Image source={{ uri: item.image }} style={styles.itemImage} />
+              ) : (
+                <View style={[styles.itemImage, styles.imagePlaceholder]}>
+                  <Text style={styles.imagePlaceholderText}>Image Not Available</Text>
+                </View>
+              )}
+              <View style={styles.itemInfo}>
+                <Text>{item.name}</Text>
+                <Text>Price: £{item.price}</Text> {/* Display item price */}
+                <Text>Quantity: {item.quantity}</Text>
+                <Text>Total: £{item.price * item.quantity}</Text> {/* Calculate and display total price */}
+              </View>
+              <TouchableOpacity onPress={() => removeFromCart(item.id)} style={styles.deleteButton}>
+                <Text style={styles.deleteButtonText}>Delete</Text>
+              </TouchableOpacity>
             </View>
-          )}
-          <View style={styles.itemInfo}>
-            <Text>{item.name}</Text>
-            <Text>Price: £{item.price}</Text> {/* Display item price */}
-            <Text>Quantity: {item.quantity}</Text>
-            <Text>Total: £{item.price * item.quantity}</Text> {/* Calculate and display total price */}
-          </View>
-          <TouchableOpacity onPress={() => removeFromCart(item.id)} style={styles.deleteButton}>
-            <Text style={styles.deleteButtonText}>Delete</Text>
+          ))}
+          {/* Display Total Price */}
+          <Text style={styles.totalPrice}>Total Price: £{totalPrice}</Text>
+          <TouchableOpacity onPress={handlePlaceOrder} style={styles.placeOrderButton}>
+            <Text style={styles.placeOrderButtonText}>Place Order</Text>
           </TouchableOpacity>
-        </View>
-      ))}
-      <TouchableOpacity onPress={handlePlaceOrder} style={styles.placeOrderButton}>
-        <Text style={styles.placeOrderButtonText}>Place Order</Text>
-      </TouchableOpacity>
+        </>
+      )}
     </View>
   );
 };
@@ -125,6 +152,17 @@ const styles = StyleSheet.create({
   placeOrderButtonText: {
     color: '#fff',
     fontWeight: 'bold',
+  },
+  totalPrice: {
+    fontSize: 18,
+    fontWeight: 'bold',
+    marginTop: 10,
+  },
+  emptyCartMessage: {
+    fontSize: 18,
+    fontWeight: 'bold',
+    textAlign: 'center',
+    marginTop: 20,
   },
 });
 

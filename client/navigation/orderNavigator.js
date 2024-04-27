@@ -24,7 +24,7 @@ const OrderNavigator = () => {
         component={OrderPlacementScreen} 
         options={{ 
           title: 'Place Order',
-          headerShown: true,
+          headerShown: false,
         }} 
       />
     </Stack.Navigator>
