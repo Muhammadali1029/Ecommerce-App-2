@@ -6,7 +6,7 @@ const createProduct = async (req, res) => {
     name: req.body.name,
     description: req.body.description,
     price: req.body.price,
-    imageURL: req.body.imageURL,
+    image: req.file.path,
   });
 
   try {
@@ -16,6 +16,8 @@ const createProduct = async (req, res) => {
         newProduct
     });
   } catch (err) {
+    console.error(err);
+    console.log(req.body.name,req.file.path);
     res.status(400).json({ message: err.message });
   }
 };

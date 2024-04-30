@@ -9,7 +9,6 @@ const HomeScreen = ({ navigation }) => {
     const fetchProducts = async () => {
       try {
         const response = await axios.get('http://localhost:3333/api/v1/products');
-        // Update this line to set products state with response.data.products
         setProducts(response.data.products);
       } catch (error) {
         console.error(error);
@@ -24,10 +23,11 @@ const HomeScreen = ({ navigation }) => {
   };
 
   const renderItem = ({ item }) => (
-    <TouchableOpacity
-      onPress={() => navigateToProductDetail(item._id)}
-      style={styles.itemContainer}
-    >
+  <TouchableOpacity
+    onPress={() => navigateToProductDetail(item._id)}
+    style={styles.itemContainer}
+  >
+    <View style={styles.imageContainer}>
       {item.image ? (
         <Image source={{ uri: item.image }} style={styles.image} />
       ) : (
@@ -35,12 +35,17 @@ const HomeScreen = ({ navigation }) => {
           <Text style={styles.imagePlaceholderText}>Image Not Available</Text>
         </View>
       )}
-      <View style={styles.itemDetails}>
-        <Text style={styles.title}>{item.name}</Text> {/* Updated to use 'name' instead of 'title' */}
-        <Text style={styles.price}>${item.price}</Text>
+    </View>
+    <View style={styles.itemDetails}>
+      <View style={styles.itemTitle}>
+        <Text style={styles.title}>{item.name}</Text>
       </View>
-    </TouchableOpacity>
-  );
+      <View style={styles.itemPrice}>
+        <Text style={styles.price}>£{item.price}</Text>
+      </View>
+    </View>
+  </TouchableOpacity>
+);
 
   return (
     <View style={styles.container}>
@@ -49,6 +54,7 @@ const HomeScreen = ({ navigation }) => {
         renderItem={renderItem}
         keyExtractor={(item) => item._id}
         showsVerticalScrollIndicator={false}
+        contentContainerStyle={styles.flatListContent}
       />
     </View>
   );
@@ -61,52 +67,57 @@ const styles = StyleSheet.create({
     paddingTop: 20,
     backgroundColor: '#f5f5f5',
   },
+  flatListContent: {
+    paddingBottom: 20,
+  },
   itemContainer: {
     flexDirection: 'row',
-    alignItems: 'center',
     marginBottom: 20,
     backgroundColor: '#fff',
-    borderRadius: 10,
+    borderRadius: 5,
+    padding: 15,
     shadowColor: '#000',
     shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.25,
     shadowRadius: 3.84,
-    elevation: 5,
+    elevation: 3,
+  },
+  imageContainer: {
+    marginRight: 15,
+    borderRadius: 10,
+    overflow: 'hidden',
   },
   image: {
     width: 100,
     height: 100,
-    borderRadius: 10,
-    margin: 10,
-  },
-  imagePlaceholder: {
-    width: 100,
-    height: 100,
-    borderRadius: 10,
-    margin: 10,
-    backgroundColor: '#ccc',
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
-  imagePlaceholderText: {
-    color: '#fff',
-    fontSize: 12,
-    fontWeight: 'bold',
+    borderRadius: 1,
   },
   itemDetails: {
     flex: 1,
-    justifyContent: 'center',
+    padding: 10, 
+    justifyContent: 'space-between',
+  },
+  itemTitle: {
+    justifyContent: 'flex-start', // Align title to top left
+    alignItems: 'flex-start', // Align title to top left
+  },
+  itemPrice: {
+    justifyContent: 'flex-end', // Align price to bottom right
+    alignItems: 'flex-end', // Align price to bottom right
   },
   title: {
-    fontSize: 16,
+    fontSize: 20,
     fontWeight: 'bold',
     marginBottom: 5,
     color: '#333',
+    fontFamily: 'Arial', // Example font family
   },
   price: {
-    fontSize: 14,
+    fontSize: 20,
     color: '#777',
+    fontFamily: 'Helvetica', // Example font family
   },
 });
+
 
 export default HomeScreen;

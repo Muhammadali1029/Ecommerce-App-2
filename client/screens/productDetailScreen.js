@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { View, Text, StyleSheet, Image, Button, TextInput, Alert } from 'react-native';
+import { View, Text, StyleSheet, Image, TouchableOpacity, TextInput, ScrollView } from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import axios from 'axios';
 
@@ -47,21 +47,25 @@ const ProductDetailScreen = ({ route, navigation }) => {
           id: productId, 
           name: product.name, 
           price: product.price,  // Add price to the cart item
-          quantity: quantity 
+          quantity: quantity,
+          image: product.image
         });
       }
   
       // Store updated cart items in AsyncStorage
       await AsyncStorage.setItem('cartItems', JSON.stringify(cartItems));
   
-      setMessage('Product added to cart successfully');
+      setMessage('Product added to cart successfully!');
+
+      // Clear message after 2 seconds
+      setTimeout(() => {
+        setMessage('');
+      }, 2000);
     } catch (error) {
       console.error('Error adding product to cart:', error);
       setMessage('Failed to add product to cart');
     }
   };
-  
-  
 
   if (!product) {
     return (
@@ -73,28 +77,38 @@ const ProductDetailScreen = ({ route, navigation }) => {
 
   return (
     <View style={styles.container}>
-      {product.image ? (
-        <Image source={{ uri: product.image }} style={styles.image} />
-      ) : (
-        <View style={[styles.image, styles.imagePlaceholder]}>
-          <Text style={styles.imagePlaceholderText}>Image Not Available</Text>
+      <ScrollView style={{flex: 1}}>
+        {product.image ? (
+          <Image source={{ uri: product.image }} style={styles.image} />
+        ) : (
+          <View style={[styles.image, styles.imagePlaceholder]}>
+            <Text style={styles.imagePlaceholderText}>Image Not Available</Text>
+          </View>
+        )}
+        <View style={styles.detailsContainer}>
+          <View style={styles.titlePrice}>
+            <Text style={styles.title}>{product.name}</Text>
+            <Text style={styles.price}>£{product.price}</Text>
+          </View>
+          <Text style={styles.description}>{product.description}</Text>
         </View>
-      )}
-      <View style={styles.detailsContainer}>
-        <Text style={styles.title}>{product.name}</Text>
-        <Text style={styles.description}>{product.description}</Text>
-        <Text style={styles.price}>Price: ${product.price}</Text>
-        <View style={styles.quantityContainer}>
-          <Text style={styles.quantityText}>Quantity:</Text>
-          <TextInput
-            style={styles.quantityInput}
-            value={quantity.toString()}
-            onChangeText={(text) => setQuantity(parseInt(text) || 0)}
-            keyboardType="numeric"
-          />
-        </View>
-        <Button title="Add to Cart" onPress={handleAddToCart} />
+      </ScrollView>
+      <View style={styles.messageContainer}>
         {message ? <Text style={styles.message}>{message}</Text> : null}
+        <View style={styles.quantityContainer}>
+          <TouchableOpacity style={styles.button} onPress={handleAddToCart}>
+            <Text style={styles.buttonText}>Add to Cart</Text>
+          </TouchableOpacity>
+          <View style={styles.quantity}>
+            <Text style={styles.quantityText}>Quantity:</Text>
+            <TextInput
+              style={styles.quantityInput}
+              value={quantity.toString()}
+              onChangeText={(text) => setQuantity(parseInt(text) || 0)}
+              keyboardType="numeric"
+            />
+          </View>
+        </View>
       </View>
     </View>
   );
@@ -103,19 +117,21 @@ const ProductDetailScreen = ({ route, navigation }) => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
+    paddingHorizontal: 30,
+    paddingTop: 10,
+    backgroundColor: '#fff',
   },
   image: {
-    width: 200,
-    height: 200,
+    width: '100%',
+    height: 300,
     marginBottom: 20,
-    borderRadius: 10,
+    borderRadius: 2,
   },
   imagePlaceholder: {
     backgroundColor: '#ccc',
     justifyContent: 'center',
     alignItems: 'center',
+    borderRadius: 10,
   },
   imagePlaceholderText: {
     color: '#fff',
@@ -123,44 +139,94 @@ const styles = StyleSheet.create({
     fontWeight: 'bold',
   },
   detailsContainer: {
-    alignItems: 'center',
+    flex: 1,
+    alignItems: 'flex-start',
+    // backgroundColor: 'green'
+  },
+  titlePrice: {
+    width: '100%', // Take full width
+    flexDirection: 'row',
+    justifyContent: 'space-between',
   },
   title: {
     fontSize: 24,
     fontWeight: 'bold',
     marginBottom: 10,
+    textAlign: 'left',
+    color: '#333',
   },
   description: {
     fontSize: 16,
-    marginBottom: 10,
-    textAlign: 'center',
+    marginBottom: 20,
+    textAlign: 'left',
+    color: '#666',
   },
   price: {
     fontSize: 20,
     fontWeight: 'bold',
-    color: '#007bff', // Blue color
-    marginBottom: 10,
+    color: '#1e1e1e',
+  },
+  messageContainer: {
+    bottom: 0,
+    width: '100%',
+    flexDirection: 'column',
+    alignItems: 'center',
+    justifyContent: 'space-around',
+    padding: 10,
+    // backgroundColor: 'blue',
   },
   quantityContainer: {
+    width: '100%', // Take full width
     flexDirection: 'row',
     alignItems: 'center',
-    marginBottom: 10,
+    justifyContent: 'space-between',
+    marginBottom: 20,
+  },
+  quantity: {
+    flexDirection: 'row',
   },
   quantityText: {
-    fontSize: 16,
+    fontSize: 18,
+    fontWeight: 600,
     marginRight: 10,
+    color: '#333',
+    alignContent: 'center'
   },
   quantityInput: {
     width: 50,
-    height: 30,
+    height: 40,
     borderWidth: 1,
     borderColor: '#ccc',
     borderRadius: 5,
     paddingHorizontal: 10,
+    fontSize: 18,
+    textAlign: 'center',
   },
   message: {
     color: 'green',
-    marginTop: 10,
+    padding: 10,
+    textAlign: 'center',
+  },
+  button: {
+    backgroundColor: '#1e1e1e',
+    paddingVertical: 14,
+    paddingHorizontal: 20,
+    borderRadius: 8,
+    alignItems: 'center',
+    justifyContent: 'center',
+    shadowColor: '#000',
+    shadowOffset: {
+      width: 0,
+      height: 2,
+    },
+    shadowOpacity: 0.25,
+    shadowRadius: 3.84,
+    elevation: 5,
+  },
+  buttonText: {
+    color: '#fff',
+    fontSize: 16,
+    fontWeight: 'bold',
   },
 });
 
