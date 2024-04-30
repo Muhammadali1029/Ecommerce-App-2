@@ -59,7 +59,8 @@ const validateOrder = (order) => {
       id: Joi.string().required(), // Define 'id' field here
       name: Joi.string().required(),
       price: Joi.number().required(),
-      quantity: Joi.number().integer().min(1).required()
+      quantity: Joi.number().integer().min(1).required(),
+      image: Joi.string().uri().allow('').required(),
     }).required(),
     totalPrice: Joi.number().required(),
     status: Joi.string().valid('pending', 'processing', 'completed').default('pending')

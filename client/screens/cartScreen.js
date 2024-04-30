@@ -46,7 +46,7 @@ const CartScreen = () => {
 
   const handlePlaceOrder = async () => {
     try {
-      await AsyncStorage.removeItem('cartItems');
+      // await AsyncStorage.removeItem('cartItems');
       navigation.navigate('OrderPlacement', { cartItems });
     } catch (error) {
       console.error(error);
@@ -57,7 +57,7 @@ const CartScreen = () => {
 
   return (
     <View style={styles.container}>
-      <Text style={styles.title}>Cart</Text>
+      {/* <Text style={styles.title}>Cart</Text> */}
       <View style={styles.contentContainer}>
         <ScrollView contentContainerStyle={styles.scrollContainer}>
           {showMessage ? (
@@ -87,13 +87,13 @@ const CartScreen = () => {
             </>
           )}
         </ScrollView>
-        <View style={styles.buttonPriceContainer}>
+      </View>
+      <View style={styles.buttonPriceContainer}>
           <Text style={styles.totalPrice}>Total Price: £{totalPrice}</Text>
           <TouchableOpacity onPress={handlePlaceOrder} style={styles.placeOrderButton}>
             <Text style={styles.placeOrderButtonText}>Place Order</Text>
           </TouchableOpacity>
         </View>
-      </View>
     </View>
   );
 };
@@ -101,8 +101,6 @@ const CartScreen = () => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    paddingVertical: 20,
-    paddingHorizontal: 10,
   },
   title: {
     fontSize: 30,
@@ -110,9 +108,12 @@ const styles = StyleSheet.create({
     marginBottom: 20,
     marginLeft: 10,
     textAlign: 'justify',
+    paddingHorizontal: 10,
   },
   contentContainer: {
     flex: 1,
+    paddingVertical: 20,
+    paddingHorizontal: 10,
   },
   scrollContainer: {
     flexGrow: 1,

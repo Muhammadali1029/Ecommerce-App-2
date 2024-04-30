@@ -3,6 +3,8 @@ import { View, Text, StyleSheet, TextInput, TouchableOpacity, Platform, Alert } 
 import DateTimePicker from '@react-native-community/datetimepicker';
 import Moment from 'moment';
 import axios from 'axios'; // Import Axios for making HTTP requests
+import AsyncStorage from '@react-native-async-storage/async-storage';
+
 
 const OrderScreen = ({ route, navigation }) => {
   const { cartItems } = route.params; // Extracting cartItems from navigation route
@@ -93,6 +95,7 @@ const handlePlaceOrder = async () => {
       console.log("order ID: ", response.data.newOrder._id);
       // Optionally, you can show an alert or navigate to a success screen
       Alert.alert('Success', 'Order placed successfully');
+      await AsyncStorage.removeItem('cartItems');
     } catch (error) {
       // Handle error response
       console.error('Error placing order:', error);
@@ -100,8 +103,6 @@ const handlePlaceOrder = async () => {
     }
   };
   
-  
-
   const showDatePicker = () => {
     setDatePickerVisibility(true);
   };
@@ -125,89 +126,89 @@ const handlePlaceOrder = async () => {
     <View style={styles.container}>
       {!orderSuccess && (
         <>
-        <Text style={styles.title}>Place Order</Text>
-          {/* Form fields */}
-          <View style={styles.inputContainer}>
-            <Text style={styles.label}>Name *</Text>
-            <TextInput
-              style={styles.input}
-              placeholder="Enter your name"
-              value={name}
-              onChangeText={setName}
-            />
-            {errors.name !== '' && <Text style={styles.error}>{errors.name}</Text>}
-          </View>
-          <View style={styles.inputContainer}>
-            <Text style={styles.label}>Phone Number *</Text>
-            <TextInput
-              style={styles.input}
-              placeholder="Enter your phone number"
-              value={phoneNumber}
-              onChangeText={setPhoneNumber}
-            />
-            {errors.phoneNumber !== '' && <Text style={styles.error}>{errors.phoneNumber}</Text>}
-          </View>
-          <View style={styles.inputContainer}>
-            <Text style={styles.label}>Email</Text>
-            <TextInput
-              style={styles.input}
-              placeholder="Enter your email"
-              value={email}
-              onChangeText={setEmail}
-            />
-          </View>
-          <View style={styles.inputContainer}>
-            <Text style={styles.label}>Company</Text>
-            <TextInput
-              style={styles.input}
-              placeholder="Enter your company name"
-              value={company}
-              onChangeText={setCompany}
-            />
-          </View>
-          <View style={styles.inputContainer}>
-            <Text style={styles.label}>Pickup Date *</Text>
-            <TouchableOpacity onPress={showDatePicker}>
-              <Text style={styles.input}>{pickupDate}</Text>
+          <View style={styles.headerContainer}>
+            <Text style={styles.title}>Place Order</Text>
+            <TouchableOpacity
+              onPress={() => navigation.goBack()}
+              style={styles.goBackButton}
+            >
+              <Text style={styles.goBackButtonText}>Go Back</Text>
             </TouchableOpacity>
-            {((Platform.OS === 'ios' || Platform.OS === 'android') && isDatePickerVisible) && (
-              <DateTimePicker
-                value={new Date()}
-                mode="datetime"
-                is24Hour={true}
-                display="default"
-                onChange={handleConfirm}
-              />
-            )}
-            {Platform.OS === 'web' && isDatePickerVisible && (
-              <input
-                type="datetime-local"
-                value={pickupDate}
-                onChange={(e) => setPickupDate(e.target.value)}
-              />
-            )}
-            {errors.pickupDate !== '' && <Text style={styles.error}>{errors.pickupDate}</Text>}
           </View>
-          
-          {/* Display Total Price */}
-          <View style={styles.inputContainer}>
-            <Text style={styles.label}>Total Price</Text>
-            <Text style={styles.input}>{calculateTotalPrice()}</Text>
+          {/* Form fields */}
+          <View style={styles.fieldsContainer}>
+            <View style={styles.inputContainer}>
+              <Text style={styles.label}>Name *</Text>
+              <TextInput
+                style={styles.input}
+                placeholder="Enter your name"
+                value={name}
+                onChangeText={setName}
+              />
+              {errors.name !== '' && <Text style={styles.error}>{errors.name}</Text>}
+            </View>
+            <View style={styles.inputContainer}>
+              <Text style={styles.label}>Phone Number *</Text>
+              <TextInput
+                style={styles.input}
+                placeholder="Enter your phone number"
+                value={phoneNumber}
+                onChangeText={setPhoneNumber}
+              />
+              {errors.phoneNumber !== '' && <Text style={styles.error}>{errors.phoneNumber}</Text>}
+            </View>
+            <View style={styles.inputContainer}>
+              <Text style={styles.label}>Email</Text>
+              <TextInput
+                style={styles.input}
+                placeholder="Enter your email"
+                value={email}
+                onChangeText={setEmail}
+              />
+            </View>
+            <View style={styles.inputContainer}>
+              <Text style={styles.label}>Company</Text>
+              <TextInput
+                style={styles.input}
+                placeholder="Enter your company name"
+                value={company}
+                onChangeText={setCompany}
+              />
+            </View>
+            <View style={styles.inputContainer}>
+              <Text style={styles.label}>Pickup Date *</Text>
+              <TouchableOpacity onPress={showDatePicker}>
+                <Text style={styles.input}>{pickupDate}</Text>
+              </TouchableOpacity>
+              {((Platform.OS === 'ios' || Platform.OS === 'android') && isDatePickerVisible) && (
+                <DateTimePicker
+                  value={new Date()}
+                  mode="datetime"
+                  is24Hour={true}
+                  display="default"
+                  onChange={handleConfirm}
+                />
+              )}
+              {Platform.OS === 'web' && isDatePickerVisible && (
+                <input
+                  type="datetime-local"
+                  value={pickupDate}
+                  onChange={(e) => setPickupDate(e.target.value)}
+                />
+              )}
+              {errors.pickupDate !== '' && <Text style={styles.error}>{errors.pickupDate}</Text>}
+            </View>
           </View>
-          
-          {/* Place Order Button */}
-          <TouchableOpacity
-            onPress={handlePlaceOrder}
-            style={styles.placeOrderButton}
-          >
-            <Text style={styles.placeOrderButtonText}>Place Order</Text>
-          </TouchableOpacity>
-          <TouchableOpacity
-            onPress={handleGoBackToHome}
-            style={styles.goBackButton}
-          >
-            <Text style={styles.goBackButtonText}>Go Back to Home</Text>
-          </TouchableOpacity>
+  
+          <View style={styles.buttonPriceContainer}>
+            <Text style={styles.totalPrice}>Total Price: £{calculateTotalPrice()}</Text>
+            <TouchableOpacity
+              onPress={handlePlaceOrder}
+              style={styles.placeOrderButton}
+            >
+              <Text style={styles.placeOrderButtonText}>Place Order</Text>
+            </TouchableOpacity>
+          </View>
         </>
       )}
       {orderSuccess && (
@@ -229,15 +230,30 @@ const handlePlaceOrder = async () => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    padding: 20,
+    // padding: 20,
   },
+  headerContainer: {
+    flexDirection: 'row',
+    alignItems: 'center', // Align items vertically in the center
+    justifyContent: 'space-between',
+    paddingVertical: 10, // Add vertical padding
+    paddingHorizontal: 20, // Add horizontal padding
+    backgroundColor: '#fff'
+  },  
   title: {
     fontSize: 24,
     fontWeight: 'bold',
-    marginBottom: 20,
+    marginBottom: 0,
+  },
+  fieldsContainer: {
+    flex: 1,
+    padding: 20,
   },
   inputContainer: {
     marginBottom: 20,
+  },
+  footerContainer: {
+    backgroundColor: '#fff'
   },
   label: {
     marginBottom: 5,
@@ -253,12 +269,26 @@ const styles = StyleSheet.create({
     color: 'red',
     marginBottom: 5,
   },
+  buttonPriceContainer: {
+    backgroundColor: '#fff',
+    padding: 20,
+    borderTopWidth: 1,
+    borderTopColor: '#ccc',
+  },
+  totalPrice: {
+    fontSize: 18,
+    fontWeight: 'bold',
+    marginTop: 10,
+    textAlign: 'justify',
+  },
   placeOrderButton: {
-    backgroundColor: '#007bff',
+    backgroundColor: '#1e1e1e',
     paddingVertical: 10,
     paddingHorizontal: 15,
     borderRadius: 5,
     alignItems: 'center',
+    justifyContent: 'center',
+    marginTop: 20,
   },
   placeOrderButtonText: {
     color: '#fff',
@@ -271,6 +301,7 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     borderRadius: 5,
     padding: 10,
+    margin: 10
   },
   successMessage: {
     fontSize: 18,
@@ -282,12 +313,13 @@ const styles = StyleSheet.create({
     marginTop: 5,
   },
   goBackButton: {
-    backgroundColor: '#007bff',
+    backgroundColor: '#1e1e1e',
     paddingVertical: 10,
     paddingHorizontal: 15,
     borderRadius: 5,
     alignItems: 'center',
-    marginTop: 10,
+    justifyContent: 'center',
+    margin: 10,
   },
   goBackButtonText: {
     color: '#fff',
