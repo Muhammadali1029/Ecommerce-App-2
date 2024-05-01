@@ -29,9 +29,9 @@ const OrderScreen = ({ route, navigation }) => {
   }, [cartItems]);
 
   const validatePhoneNumber = (phoneNumber) => {
-    const regex = /^\d{10}$/;
+    const regex = /^(?:\d{10}|\d{11})$/;
     return regex.test(phoneNumber);
-  };
+  };  
 
   const isFormValid = () => {
     console.log('Name:', name);

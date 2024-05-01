@@ -51,7 +51,7 @@ const deleteOrder = async (req, res) => {
 const validateOrder = (order) => {
   const schema = Joi.object({
     name: Joi.string().required(),
-    phoneNumber: Joi.string().pattern(/^\d{10}$/).required(),
+    phoneNumber: Joi.string().pattern(/^(?:\d{10}|\d{11})$/).required(),
     email: Joi.string().email().allow('').optional(),
     company: Joi.string().allow('').optional(),
     pickupDateTime: Joi.date().required(),
