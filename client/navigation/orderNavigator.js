@@ -1,5 +1,3 @@
-// OrderNavigator.js
-
 import * as React from 'react';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 
@@ -23,8 +21,9 @@ const OrderNavigator = () => {
         name="OrderPlacement" 
         component={OrderPlacementScreen} 
         options={{ 
-          title: 'Place Order',
-          headerShown: false,
+          headerShown: true, // Set headerShown to true to display the custom header
+          headerLeft: () => null, // Hide the back button
+          title: '',
         }} 
       />
     </Stack.Navigator>

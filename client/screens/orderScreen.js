@@ -28,11 +28,6 @@ const OrderScreen = ({ route, navigation }) => {
     setItems(cartItems); // Update items when cartItems change
   }, [cartItems]);
 
-  const validatePhoneNumber = (phoneNumber) => {
-    const regex = /^(?:\d{10}|\d{11})$/;
-    return regex.test(phoneNumber);
-  };  
-
   const isFormValid = () => {
     console.log('Name:', name);
     console.log('Phone Number:', phoneNumber);
@@ -42,7 +37,6 @@ const OrderScreen = ({ route, navigation }) => {
     return (
       name.trim() !== '' &&
       phoneNumber.trim() !== '' && 
-      validatePhoneNumber(phoneNumber) &&
       pickupDate.trim() !== '' &&
       items.length > 0 // Check if there are items in the cart
     );
@@ -63,12 +57,7 @@ const handlePlaceOrder = async () => {
       console.log('Form is not valid.');
       setErrors({
         name: name.trim() === '' ? 'Name is required' : '',
-        phoneNumber:
-          phoneNumber.trim() === ''
-            ? 'Phone number is required'
-            : !validatePhoneNumber(phoneNumber)
-            ? 'Invalid phone number'
-            : '',
+        phoneNumber: phoneNumber.trim() === '' ? 'Phone number is required' : '',
         pickupDate: pickupDate.trim() === '' ? 'Pickup date is required' : '',
         items: items.length === 0 ? 'Please add items to the cart' : '',
       });
