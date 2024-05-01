@@ -77,22 +77,24 @@ const ProductDetailScreen = ({ route, navigation }) => {
 
   return (
     <View style={styles.container}>
-      <ScrollView style={{flex: 1}}>
-        {product.image ? (
-          <Image source={{ uri: product.image }} style={styles.image} />
-        ) : (
-          <View style={[styles.image, styles.imagePlaceholder]}>
-            <Text style={styles.imagePlaceholderText}>Image Not Available</Text>
+      <View style={styles.contentContainer}>
+        <ScrollView style={{flex: 1}}>
+          {product.image ? (
+            <Image source={{ uri: product.image }} style={styles.image} />
+          ) : (
+            <View style={[styles.image, styles.imagePlaceholder]}>
+              <Text style={styles.imagePlaceholderText}>Image Not Available</Text>
+            </View>
+          )}
+          <View style={styles.detailsContainer}>
+            <View style={styles.titlePrice}>
+              <Text style={styles.title}>{product.name}</Text>
+              <Text style={styles.price}>£{product.price}</Text>
+            </View>
+            <Text style={styles.description}>{product.description}</Text>
           </View>
-        )}
-        <View style={styles.detailsContainer}>
-          <View style={styles.titlePrice}>
-            <Text style={styles.title}>{product.name}</Text>
-            <Text style={styles.price}>£{product.price}</Text>
-          </View>
-          <Text style={styles.description}>{product.description}</Text>
-        </View>
-      </ScrollView>
+        </ScrollView>
+      </View>
       <View style={styles.messageContainer}>
         {message ? <Text style={styles.message}>{message}</Text> : null}
         <View style={styles.quantityContainer}>
@@ -117,13 +119,16 @@ const ProductDetailScreen = ({ route, navigation }) => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    paddingHorizontal: 30,
-    paddingTop: 10,
-    backgroundColor: '#fff',
+  },
+  contentContainer: {
+    flex: 1,
+    paddingVertical: 10,
+    paddingHorizontal: 20,
   },
   image: {
     width: '100%',
     height: 300,
+    resizeMode: 'cover',
     marginBottom: 20,
     borderRadius: 2,
   },
@@ -173,7 +178,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'space-around',
     padding: 10,
-    // backgroundColor: 'blue',
+    backgroundColor: '#fff',
   },
   quantityContainer: {
     width: '100%', // Take full width

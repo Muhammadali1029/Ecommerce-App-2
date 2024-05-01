@@ -89,11 +89,11 @@ const CartScreen = () => {
         </ScrollView>
       </View>
       <View style={styles.buttonPriceContainer}>
-          <Text style={styles.totalPrice}>Total Price: £{totalPrice}</Text>
-          <TouchableOpacity onPress={handlePlaceOrder} style={styles.placeOrderButton}>
-            <Text style={styles.placeOrderButtonText}>Place Order</Text>
-          </TouchableOpacity>
-        </View>
+        <Text style={styles.totalPrice}>Total Price: £{totalPrice}</Text>
+        <TouchableOpacity onPress={handlePlaceOrder} style={styles.placeOrderButton}>
+          <Text style={styles.placeOrderButtonText}>Place Order</Text>
+        </TouchableOpacity>
+      </View>
     </View>
   );
 };

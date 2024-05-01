@@ -24,10 +24,12 @@ const styles = StyleSheet.create({
     marginRight: 10, // Adjust the positioning as needed
   },
   button: {
-    backgroundColor: '#007bff',
+    backgroundColor: '#1e1e1e',
     paddingVertical: 10,
     paddingHorizontal: 15,
     borderRadius: 5,
+    alignItems: 'center',
+    justifyContent: 'center',
   },
   buttonText: {
     color: '#fff',
