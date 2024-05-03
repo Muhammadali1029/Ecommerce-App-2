@@ -11,7 +11,8 @@ jobs:
       - name: Checkout Repo
         uses: actions/checkout@v2.3.2
       - name: Install Dependencies
-        run: npm install      
+        run: npm install  
+        working-directory: server    
       - name: Build
         env:
           CI: false        
