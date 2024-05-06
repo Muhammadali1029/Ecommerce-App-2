@@ -4,7 +4,8 @@ import * as React from 'react';
 import { NavigationContainer } from '@react-navigation/native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 
-import HomeScreen from '../screens/homeScreen.js';
+// import HomeScreen from '../screens/homeScreen.js';
+import HomeNavigator from './homeNavigator.js';
 import ProductDetailScreen from '../screens/productDetailScreen.js';
 import OrderNavigator from './orderNavigator'; // Import OrderNavigator component
 import CartButton from '../components/cartButton.js';
@@ -17,10 +18,9 @@ function AppNavigator() {
       <Stack.Navigator initialRouteName="Home">
         <Stack.Screen 
           name="Home" 
-          component={HomeScreen} 
+          component={HomeNavigator} 
           options={{ 
-            headerShown: true,
-            headerRight: () => <CartButton />,
+            headerShown: false
           }} 
         />
         <Stack.Screen 
