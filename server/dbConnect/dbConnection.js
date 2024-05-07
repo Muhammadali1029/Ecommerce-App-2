@@ -1,11 +1,12 @@
-// server.js
 const mongoose = require('mongoose');
+const dotenv = require('dotenv');
 
-//connect to MongoDB
+dotenv.config();
+
+// Connect to MongoDB using environment variable
 const connectToMongoDB = async () => {
   try {
-    const MONGODB_URI = 'mongodb+srv://ali:ali123@atlascluster.g2vtiqo.mongodb.net/ecommerce-app-2';
-    await mongoose.connect(MONGODB_URI, {
+    await mongoose.connect(process.env.MONGODB_URI, {
       useNewUrlParser: true,
       useUnifiedTopology: true,
     });
