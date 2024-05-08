@@ -13,7 +13,8 @@ const ProductDetailScreen = ({ route, navigation }) => {
     const fetchProduct = async () => {
       try {
         // const response = await axios.get(`http://localhost:3333/api/v1/products/${productId}`);
-        const response = await axios.get(`${process.env.SERVER_URI}/products/${productId}`);
+        const response = await axios.get(`https://appserver-514886c85636.herokuapp.com/api/v1/products/${productId}`);
+        // const response = await axios.get(`${process.env.SERVER_URI}/products/${productId}`);
         setProduct(response.data.product);
       } catch (error) {
         console.error('Error fetching product:', error);

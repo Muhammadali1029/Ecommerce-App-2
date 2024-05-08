@@ -68,7 +68,8 @@ const handlePlaceOrder = async () => {
       // Make an HTTP POST request to the server to create the order
       console.log('Form is valid. Sending order request...');
       // const response = await axios.post('http://localhost:3333/api/v1/orders', {
-      const response = await axios.post(`${process.env.SERVER_URI}/orders`, {
+      const response = await axios.post('https://appserver-514886c85636.herokuapp.com/api/v1/orders', {
+      // const response = await axios.post(`${process.env.SERVER_URI}/orders`, {
         name: name,
         email,
         phoneNumber,

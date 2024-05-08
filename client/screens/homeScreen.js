@@ -9,7 +9,8 @@ const HomeScreen = ({ navigation }) => {
     const fetchProducts = async () => {
       try {
         // const response = await axios.get('http://localhost:3333/api/v1/products');
-        const response = await axios.get(`${process.env.SERVER_URI}/products`);
+        const response = await axios.get('https://appserver-514886c85636.herokuapp.com/api/v1/products');
+        // const response = await axios.get(`${process.env.SERVER_URI}/products`);
         setProducts(response.data.products);
       } catch (error) {
         console.error(error);
