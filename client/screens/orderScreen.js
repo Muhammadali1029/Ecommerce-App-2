@@ -52,47 +52,58 @@ const calculateTotalPrice = () => {
 };
 
 const handlePlaceOrder = async () => {
-    console.log('Attempting to place order...');
-    if (!isFormValid()) {
-      console.log('Form is not valid.');
-      setErrors({
-        name: name.trim() === '' ? 'Name is required' : '',
-        phoneNumber: phoneNumber.trim() === '' ? 'Phone number is required' : '',
-        pickupDate: pickupDate.trim() === '' ? 'Pickup date is required' : '',
-        items: items.length === 0 ? 'Please add items to the cart' : '',
+  console.log('Attempting to place order...');
+  if (!isFormValid()) {
+    console.log('Form is not valid.');
+    setErrors({
+      name: name.trim() === '' ? 'Name is required' : '',
+      phoneNumber: phoneNumber.trim() === '' ? 'Phone number is required' : '',
+      pickupDate: pickupDate.trim() === '' ? 'Pickup date is required' : '',
+      items: items.length === 0 ? 'Please add items to the cart' : '',
+    });
+    return;
+  }
+
+  try {
+    // Make an HTTP POST request to the server to create the order
+    console.log('Form is valid. Sending order request...');
+    const response = await axios.post('https://appserver-514886c85636.herokuapp.com/api/v1/orders', {
+      name: name,
+      email,
+      phoneNumber,
+      company,
+      pickupDateTime: pickupDate,
+      items,
+      totalPrice: calculateTotalPrice(), // Calculate total price
+    });
+
+    // Handle success response
+    console.log('Order placed:', response.data.newOrder);
+    setOrderSuccess(true);
+    setOrderId(response.data.newOrder._id);
+    console.log("order ID: ", response.data.newOrder._id);
+
+    console.log("Items: " + items)
+    // Update stock levels for each item in the order
+    for (const item of items) {
+      const updatedStock = item.originalStock - item.quantity;
+      console.log("updated stock: " + updatedStock);
+      await axios.patch(`https://appserver-514886c85636.herokuapp.com/api/v1/products/${item.id}`, {
+        stock: updatedStock,
       });
-      return;
     }
-  
-    try {
-      // Make an HTTP POST request to the server to create the order
-      console.log('Form is valid. Sending order request...');
-      // const response = await axios.post('http://localhost:3333/api/v1/orders', {
-      const response = await axios.post('https://appserver-514886c85636.herokuapp.com/api/v1/orders', {
-      // const response = await axios.post(`${process.env.SERVER_URI}/orders`, {
-        name: name,
-        email,
-        phoneNumber,
-        company,
-        pickupDateTime: pickupDate,
-        items,
-        totalPrice: calculateTotalPrice(), // Calculate total price
-      });
-      
-      // Handle success response
-      console.log('Order placed:', response.data.newOrder);
-      setOrderSuccess(true);
-      setOrderId(response.data.newOrder._id);
-      console.log("order ID: ", response.data.newOrder._id);
-      // Optionally, you can show an alert or navigate to a success screen
-      Alert.alert('Success', 'Order placed successfully');
-      await AsyncStorage.removeItem('cartItems');
-    } catch (error) {
-      // Handle error response
-      console.error('Error placing order:', error);
-      Alert.alert('Error', 'Failed to place order. Please try again later.');
-    }
-  };
+ 
+    // Optionally, you can show an alert or navigate to a success screen
+    Alert.alert('Success', 'Order placed successfully');
+    await AsyncStorage.removeItem('cartItems');
+  } catch (error) {
+    // Handle error response
+    console.error('Error placing order:', error);
+    Alert.alert('Error', 'Failed to place order. Please try again later.');
+  }
+};
+
+
   
   const showDatePicker = () => {
     setDatePickerVisibility(true);
@@ -110,7 +121,7 @@ const handlePlaceOrder = async () => {
   };
 
   const handleGoBackToHome = () => {
-    navigation.navigate('Home');
+    navigation.navigate('HomeNavigator');
   };
 
   return (

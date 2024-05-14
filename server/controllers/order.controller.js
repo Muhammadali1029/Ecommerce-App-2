@@ -54,7 +54,7 @@ const validateOrder = (order) => {
     phoneNumber: Joi.string().required(),
     email: Joi.string().email().allow('').optional(),
     company: Joi.string().allow('').optional(),
-    pickupDateTime: Joi.date().required(),
+    pickupDateTime: Joi.date().optional(),
     items: Joi.array().items({
       id: Joi.string().required(), // Define 'id' field here
       name: Joi.string().required(),

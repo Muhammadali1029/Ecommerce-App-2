@@ -1,7 +1,8 @@
 import * as React from 'react';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 
-import HomeScreen from '../screens/homeScreen.js';
+import LightScreen from '../screens/lightScreen.js';
+import CeilingScreen from '../screens/ceilingScreen.js';
 import CalculatorScreen from '../screens/calculatorScreen.js';
 import CartButton from '../components/cartButton.js';
 
@@ -10,12 +11,21 @@ const Tab = createBottomTabNavigator();
 
 const HomeNavigator = () => {
   return (
-    <Tab.Navigator initialRouteName="Home">
+    <Tab.Navigator initialRouteName="Lights">
       <Tab.Screen 
-        name="Home" 
-        component={HomeScreen} 
+        name="Lights" 
+        component={LightScreen} 
         options={{ 
-          title: 'Home',
+          title: 'Lights',
+          headerShown: true,
+          headerRight: () => <CartButton />,
+        }} 
+      />
+      <Tab.Screen 
+        name="Ceilings" 
+        component={CeilingScreen} 
+        options={{ 
+          title: 'Ceilings',
           headerShown: true,
           headerRight: () => <CartButton />,
         }} 

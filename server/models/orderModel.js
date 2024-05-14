@@ -6,7 +6,7 @@ const orderSchema = new mongoose.Schema({
     phoneNumber: { type: String, required: true },
     email: { type: String, required: false },
     company: { type: String, required: false },
-    pickupDateTime: { type: Date, required: true },
+    pickupDateTime: { type: Date, required: false },
     items: [
       {
         id: { type: String, required: true }, // Define 'id' field here

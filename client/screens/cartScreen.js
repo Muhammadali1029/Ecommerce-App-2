@@ -44,9 +44,19 @@ const CartScreen = () => {
     }
   };
 
+  const increaseQuantity = (id) => {
+    const updatedCartItems = cartItems.map(item => {
+      if (item.id === id) {
+        return { ...item, quantity: item.quantity + 1 };
+      }
+      return item;
+    });
+    setCartItems(updatedCartItems);
+    AsyncStorage.setItem('cartItems', JSON.stringify(updatedCartItems));
+  };
+
   const handlePlaceOrder = async () => {
     try {
-      // await AsyncStorage.removeItem('cartItems');
       navigation.navigate('OrderPlacement', { cartItems });
     } catch (error) {
       console.error(error);
@@ -57,7 +67,6 @@ const CartScreen = () => {
 
   return (
     <View style={styles.container}>
-      {/* <Text style={styles.title}>Cart</Text> */}
       <View style={styles.contentContainer}>
         <ScrollView contentContainerStyle={styles.scrollContainer}>
           {showMessage ? (
@@ -79,8 +88,14 @@ const CartScreen = () => {
                     <Text style={styles.itemDetail}>Quantity: {item.quantity}</Text>
                     <Text style={styles.itemDetail}>Total: £{item.price * item.quantity}</Text> 
                   </View>
-                  <TouchableOpacity onPress={() => removeFromCart(item.id)} style={styles.deleteButton}>
-                    <Text style={styles.deleteButtonText}>Delete</Text>
+                  <TouchableOpacity onPress={() => removeFromCart(item.id)} style={styles.pillButton}>
+                    <View style={styles.deleteContainer}>
+                      <Text style={styles.deleteButtonText}>Delete</Text>
+                    </View>
+                    <Text style={styles.pillButtonText}>{item.quantity}</Text>
+                    <TouchableOpacity onPress={() => increaseQuantity(item.id)} style={styles.quantityButton}>
+                      <Text style={styles.quantityButtonText}>+</Text>
+                    </TouchableOpacity>
                   </TouchableOpacity>
                 </View>
               ))}
@@ -101,14 +116,6 @@ const CartScreen = () => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-  },
-  title: {
-    fontSize: 30,
-    fontWeight: 'bold',
-    marginBottom: 20,
-    marginLeft: 10,
-    textAlign: 'justify',
-    paddingHorizontal: 10,
   },
   contentContainer: {
     flex: 1,
@@ -184,15 +191,38 @@ const styles = StyleSheet.create({
   itemDetail: {
     marginBottom: 3,
   },
-  deleteButton: {
-    backgroundColor: 'red',
+  deleteContainer: {
+    borderWidth: 1, 
+    borderColor: '#ccc',
+    borderRadius: 100,
+    backgroundColor: '#ccc',
+    padding: 5
+  },
+  pillButton: {
+    backgroundColor: 'transparent',
+    borderWidth: 1,
+    boderColour: 'black',
+    flexDirection: 'row',
+    alignItems: 'center',
+    borderRadius: 20,
     paddingVertical: 5,
     paddingHorizontal: 10,
-    borderRadius: 5,
-    alignItems: 'center',
-    justifyContent: 'center',
+  },
+  pillButtonText: {
+    color: 'black',
+    marginRight: 5,
+    padding: 5
   },
   deleteButtonText: {
+    color: 'black'
+  },
+  quantityButton: {
+    backgroundColor: 'black',
+    borderRadius: 20,
+    paddingVertical: 5,
+    paddingHorizontal: 10,
+  },
+  quantityButtonText: {
     color: '#fff',
     fontWeight: 'bold',
   },
