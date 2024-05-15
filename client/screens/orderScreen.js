@@ -67,13 +67,17 @@ const handlePlaceOrder = async () => {
   try {
     // Make an HTTP POST request to the server to create the order
     console.log('Form is valid. Sending order request...');
+    
+    // Create a new array of items without the originalStock property
+    const itemsToSend = items.map(({ originalStock, ...rest }) => rest);
+
     const response = await axios.post('https://appserver-514886c85636.herokuapp.com/api/v1/orders', {
       name: name,
-      email,
       phoneNumber,
+      email,
       company,
       pickupDateTime: pickupDate,
-      items,
+      items: itemsToSend, // Use the new array of items without originalStock
       totalPrice: calculateTotalPrice(), // Calculate total price
     });
 
@@ -83,7 +87,7 @@ const handlePlaceOrder = async () => {
     setOrderId(response.data.newOrder._id);
     console.log("order ID: ", response.data.newOrder._id);
 
-    console.log("Items: " + items)
+    console.log("Items being sent: " + items)
     // Update stock levels for each item in the order
     for (const item of items) {
       const updatedStock = item.originalStock - item.quantity;
@@ -104,7 +108,6 @@ const handlePlaceOrder = async () => {
 };
 
 
-  
   const showDatePicker = () => {
     setDatePickerVisibility(true);
   };

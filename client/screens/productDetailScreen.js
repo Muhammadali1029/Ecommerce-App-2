@@ -45,14 +45,18 @@ const ProductDetailScreen = ({ route, navigation }) => {
       const existingCartItems = await AsyncStorage.getItem('cartItems');
       let cartItems = existingCartItems ? JSON.parse(existingCartItems) : [];
   
-      // Check if the product already exists in the cart
-      const existingItemIndex = cartItems.findIndex(item => item.id === productId);
+      // Find the product index in the cart
+      const productIndexInCart = cartItems.findIndex(item => item.id === productId);
   
-      if (existingItemIndex !== -1) {
+      // Calculate the remaining stock after adding to cart
+      const remainingStock = isStockAvailable ? product.stock - quantity : 0;
+  
+      // If product already exists in cart, update its quantity
+      if (productIndexInCart !== -1) {
         // If the product exists, update its quantity
-        const totalQuantity = cartItems[existingItemIndex].quantity + quantity;
+        const totalQuantity = cartItems[productIndexInCart].quantity + quantity;
         if (totalQuantity <= product.stock) {
-          cartItems[existingItemIndex].quantity = totalQuantity;
+          cartItems[productIndexInCart].quantity = totalQuantity;
         } else {
           setMessage('You cannot add more than the available stock');
           return;
@@ -63,10 +67,10 @@ const ProductDetailScreen = ({ route, navigation }) => {
           cartItems.push({ 
             id: productId, 
             name: product.name, 
-            price: product.price,  // Add price to the cart item
+            price: product.price,  
             quantity: quantity,
             image: product.image,
-            originalStock: product.stock
+            originalStock: product.stock, // Include originalStock property
           });
         } else {
           setMessage('You cannot add more than the available stock');
@@ -75,7 +79,7 @@ const ProductDetailScreen = ({ route, navigation }) => {
       }
   
       // Update the product stock quantity
-      const updatedProduct = { ...product, stock: product.stock - quantity };
+      const updatedProduct = { ...product, stock: remainingStock };
       setProduct(updatedProduct);
   
       // Store updated cart items in AsyncStorage
@@ -92,6 +96,7 @@ const ProductDetailScreen = ({ route, navigation }) => {
       setMessage('Failed to add product to cart');
     }
   };
+  
   
   // Function to handle removing an item from the cart
   const handleRemoveFromCart = async (cartItemId) => {
