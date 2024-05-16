@@ -54,13 +54,13 @@ const validateOrder = (order) => {
     phoneNumber: Joi.string().required(),
     email: Joi.string().email().allow('').optional(),
     company: Joi.string().allow('').optional(),
-    pickupDateTime: Joi.date().optional(),
+    pickupDateTime: Joi.date().required(),
     items: Joi.array().items({
       id: Joi.string().required(), // Define 'id' field here
       name: Joi.string().required(),
       price: Joi.number().required(),
       quantity: Joi.number().integer().min(1).required(),
-      image: Joi.string().uri().allow('').required(),
+      image: Joi.string().uri().allow('').optional(),
     }).required(),
     totalPrice: Joi.number().required(),
     status: Joi.string().valid('pending', 'processing', 'completed').default('pending')

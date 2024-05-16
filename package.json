@@ -2,7 +2,7 @@
   "name": "server",
   "version": "1.0.0",
   "description": "Your application description",
-  "main": "server/server.js",
+  "main": "client/App.js",
   "scripts": {
     "start": "cd server && nodemon server.js",
     "android": "expo start --android",
